@@ -24,7 +24,7 @@ items = []
 user_input = ""
 active = False
 
-x_button = image.load("/~/Documents/Masseyhacks_VII/images/x-button.png")
+x_button = image.load("/home/wevie/Documents/Masseyhacks_VII/images/x-button.png")
 
 while running:
     mx, my = mouse.get_pos()
@@ -127,7 +127,13 @@ while running:
             continue
     
     # Flashcards
-    draw.rect(screen, (0, 0, 0), (445, 25, 1100, 400), 2)
+    draw.rect(screen, (0, 0, 0), (445, 25, 1075, 400), 2)
+    draw.rect(screen, (0, 0, 0), (1530, 25, 50, 50), 1)
+    draw.rect(screen, (0, 0, 0), (1530, 85, 50, 50), 1)
+    draw.rect(screen, (0, 0, 0), (1530, 145, 50, 50), 1)
+
+    screen.blit(Font.render("+",False, (0, 0, 0)), (1535, 30))
+    
 
     display.flip()
     time.Clock().tick(60)
