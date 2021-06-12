@@ -24,7 +24,8 @@ items = []
 user_input = ""
 active = False
 
-x_button = image.load("images/x-button.png").convert_alpha(screen)
+x_button = image.load("/~/Documents/Masseyhacks_VII/images/x-button.png")
+
 while running:
     mx, my = mouse.get_pos()
     mb = mouse.get_pressed(3)
@@ -37,11 +38,13 @@ while running:
             if evt.type == KEYDOWN:
                 if evt.key == K_BACKSPACE:
                     user_input = user_input[:-1]
+                    items[-1] = user_input
                 elif evt.key == K_RETURN:
-                    items.append(user_input)
                     active = False
                 else:
-                    user_input += evt.unicode
+                    if len(user_input) < 20:
+                        user_input += evt.unicode
+                    items[-1] = user_input
                 print(user_input)
 
         if evt.type == MOUSEBUTTONDOWN:
@@ -57,8 +60,7 @@ while running:
                     timer = 0
 
             if Rect(35, 185, 45, 40).collidepoint(mx, my):
-                if (user_input != ""):
-                    items.append(user_input)
+                items.append("")
                 user_input = ""
                 active = True
 
@@ -112,13 +114,20 @@ while running:
 
     for i in range(len(items)-1, -1, -1):
         if i < 24:
+            if Rect(350, 230 + 25 * i, 25, 25).collidepoint(mx, my):
+                draw.rect(screen, (255, 0, 0), (350, 230 + 25 * i, 25, 25))
+                if mb[0] == 1 and frame % 4 == 0:
+                    del items[i]
+                    continue
             screen.blit(Font.render("- " + items[i], False, (0, 0, 0)), (75, 230 + 25 * i))
             draw.rect(screen, (0, 0, 0), (350, 230 + 25 * i, 25, 25), 1)
-            screen.blit(x_button(350, 230 + 25 * i))
-            if Rect(350, 230 + 25 * i, 25, 25).collidepoint(mx, my) and mb[0] == 1 and frame % 2 == 0:
-                del items[i]
+            screen.blit(x_button, (350, 230 + 25 * i))
+
         else:
             continue
+    
+    # Flashcards
+    draw.rect(screen, (0, 0, 0), (445, 25, 1100, 400), 2)
 
     display.flip()
     time.Clock().tick(60)
