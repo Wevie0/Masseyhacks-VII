@@ -6,6 +6,7 @@ from pygame import font as font
 from pygame import draw as draw
 from pygame import mouse as mouse
 from pygame import image as image
+from pygame import mixer as mixer
 
 init()
 font.init()
@@ -20,11 +21,21 @@ timer_total, timer = 3600, 3600
 time_stopped = False
 frame = 1
 
-items = []
 user_input = ""
-active = False
+
+items = []
+todo_active = False
+
+slides = []
+cur_slide = -1
+slides_active = False
+obverse = False
 
 x_button = image.load("/home/wevie/Documents/Masseyhacks_VII/images/x-button.png")
+right_arrow = image.load("/home/wevie/Documents/Masseyhacks_VII/images/right-arrow.png")
+left_arrow = image.load("/home/wevie/Documents/Masseyhacks_VII/images/left-arrow.png")
+flip = image.load("/home/wevie/Documents/Masseyhacks_VII/images/flip.png")
+mixer.music.load("beep.mp3")
 
 while running:
     mx, my = mouse.get_pos()
@@ -34,18 +45,29 @@ while running:
         if evt.type == QUIT:
             running = False
         
-        if active:
-            if evt.type == KEYDOWN:
+        if evt.type == KEYDOWN:
+            if todo_active:
                 if evt.key == K_BACKSPACE:
                     user_input = user_input[:-1]
                     items[-1] = user_input
                 elif evt.key == K_RETURN:
-                    active = False
+                    todo_active = False
                 else:
                     if len(user_input) < 20:
                         user_input += evt.unicode
                     items[-1] = user_input
+            elif slides_active:
+                if evt.key == K_BACKSPACE:
+                    user_input = user_input[:-1]
+                    slides[cur_slide][0] = user_input
+                elif evt.key == K_RETURN:
+                    slides_active = False
+                else:
+                    if len(user_input) < 85:
+                        user_input += evt.unicode
+                    slides[cur_slide][0] = user_input
                 print(user_input)
+        
 
         if evt.type == MOUSEBUTTONDOWN:
             if Rect(35, 90, 100, 50).collidepoint(mx, my): # Stop/Play
@@ -62,7 +84,20 @@ while running:
             if Rect(35, 185, 45, 40).collidepoint(mx, my):
                 items.append("")
                 user_input = ""
-                active = True
+                todo_active = True
+            
+            if Rect(1530, 25, 50, 50).collidepoint(mx, my):
+                user_input = ""
+                slides.append(["", ""])
+                cur_slide = len(slides) - 1
+                slides_active = True
+            
+            elif Rect(1530, 85, 50, 50).collidepoint(mx, my):
+                if cur_slide > 0:
+                    cur_slide -= 1
+            elif Rect(1530, 145, 50, 50).collidepoint(mx, my):
+                if cur_slide < len(slides) - 1:
+                    cur_slide += 1
 
     
     screen.fill((255, 255, 255))
@@ -72,6 +107,7 @@ while running:
             timer -= 1
 
     if timer <= 0:
+        mixer.music.play()
         timer = 0
     min, sec = divmod(timer, 60)
     timer_display = "%02d:%02d" % (int(min), int(sec))
@@ -131,8 +167,15 @@ while running:
     draw.rect(screen, (0, 0, 0), (1530, 25, 50, 50), 1)
     draw.rect(screen, (0, 0, 0), (1530, 85, 50, 50), 1)
     draw.rect(screen, (0, 0, 0), (1530, 145, 50, 50), 1)
+    draw.rect(screen, (0, 0, 0), (1530, 205, 50, 50), 1)
 
-    screen.blit(Font.render("+",False, (0, 0, 0)), (1535, 30))
+    screen.blit(Font.render("+",False, (0, 0, 0)), (1545, 35))
+    screen.blit(left_arrow, (1530, 85))
+    screen.blit(right_arrow, (1530, 145))
+    screen.blit(flip, (1530, 205))
+
+    if cur_slide != -1:
+        screen.blit(Font.render(slides[cur_slide][0], False, (0, 0, 0)), (450, 30))
     
 
     display.flip()
