@@ -123,7 +123,6 @@ while running:
                 user_input_2 = ""
                 notes.append(["", mx, my])
 
-    
     screen.fill(Color("#87CEEB"))
     # Timer
     if not time_stopped:
